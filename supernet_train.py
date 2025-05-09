@@ -1,3 +1,4 @@
+import sys
 import argparse
 import datetime
 import numpy as np
@@ -310,7 +311,7 @@ def main(args):
             output_dir = Path(args.output_dir)
             output_path = Path(str(output_dir) + '/supernet_' + str(cur_rank_ratio) + '_' + str(cur_patch_size))
             model_path = Path(str(output_dir) + '/supernet_' + str(cur_rank_ratio) + '_' + str(cur_patch_size) + '/model_modified.pth')
-            # print(output_path)
+            print(output_path.absolute())
 
             if not output_path.exists():
                 output_path.mkdir(parents=True)
@@ -933,6 +934,7 @@ def main(args):
 
 
 if __name__ == '__main__':
+    print(sys.argv)
     parser = argparse.ArgumentParser('AutoFormer training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
     if args.output_dir:
