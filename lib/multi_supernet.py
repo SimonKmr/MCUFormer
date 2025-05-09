@@ -75,7 +75,7 @@ class evolution_supernet(object):
         X = np.array([[1, x1, x2] for x1, x2, y1, y2 in self.result_array])
         y = np.array([[100-y1] for x1, x2, y1, y2 in self.result_array]).reshape(-1, 1)
 
-        w = np.linalg.inv(X.T @ X) @ X.T @ y
+        w = np.linalg.inv(X.T @ X) @ X.T @ y # <- causes error, especial the inversion https://stackoverflow.com/questions/13795682/numpy-error-singular-matrix
         return w.reshape(-1)[-2:]
 
     def get_error_evolution_step(self):
