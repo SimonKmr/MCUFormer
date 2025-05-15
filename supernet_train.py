@@ -196,6 +196,18 @@ def get_args_parser():
 
     return parser
 
+def append_new_choices(new_choice,exist_choice,cur_rank_ratio,cur_patch_size,super_result):
+    in_point = []
+    surrounding_point = find_nearlist_point(exist_choice, [cur_rank_ratio, cur_patch_size], 5)
+    for item in surrounding_point:
+        for item1 in super_result:
+            if item1[:2] == item:
+                in_point.append(item1)
+    evolution_step = evolution_supernet(in_point, cur_rank_ratio, cur_patch_size).evolution_step()
+    new_choice_real = np.sum([[cur_rank_ratio, cur_patch_size], evolution_step], axis=0)
+    new_choice.append([cfg_new.SEARCH_SPACE.RANK_RATIO.index(round(new_choice_real[0], 2)) + 1,
+                       cfg_new.SEARCH_SPACE.PATCH_SIZE.index(int(new_choice_real[1])) + 1])
+
 def main(args):
 
     utils.init_distributed_mode(args)
@@ -508,15 +520,7 @@ def main(args):
             cur_rank_ratio = cfg_new.SEARCH_SPACE.RANK_RATIO[int(val[0])-1]
             cur_patch_size = cfg_new.SEARCH_SPACE.PATCH_SIZE[int(val[1])-1]
             if int(val[2]) == super_epoch:
-                in_point = []
-                surranding_point = find_nearlist_point(exist_choice_1, [cur_rank_ratio, cur_patch_size], 5)
-                for item in surranding_point:
-                    for item1 in super_result_1:
-                        if item1[:2] == item:
-                            in_point.append(item1)
-                evolution_step = evolution_supernet(in_point, cur_rank_ratio, cur_patch_size).evolution_step()
-                new_choice_real = np.sum([[cur_rank_ratio, cur_patch_size], evolution_step], axis=0)
-                new_choice.append([cfg_new.SEARCH_SPACE.RANK_RATIO.index(round(new_choice_real[0],2))+1, cfg_new.SEARCH_SPACE.PATCH_SIZE.index(int(new_choice_real[1]))+1]) 
+                append_new_choices(new_choice,exist_choice_1,cur_rank_ratio, cur_patch_size,super_result_1)
             elif int(val[2]) == 2*super_epoch:
                 if len(exist_choice_2) == 1:
                     new_rank_ratio = cfg_new.SEARCH_SPACE.RANK_RATIO[int(val[0])]
@@ -693,26 +697,10 @@ def main(args):
                     level_ratio = sample_legel_ratio(model, args.input_size, new_patch_size, new_rank_ratio, args.sample_num, choices, output_path)
                     epoch_num = args.start_epoch+args.super_epoch
                     super_result_2.append([new_rank_ratio, new_patch_size, (max_acc+average_acc)/2, level_ratio])
-                    in_point = []
-                    surranding_point = find_nearlist_point(exist_choice_2, [cur_rank_ratio, cur_patch_size], 5)
-                    for item in surranding_point:
-                        for item1 in super_result_2:
-                            if item1[:2] == item:
-                                in_point.append(item1)
-                    evolution_step = evolution_supernet(in_point, cur_rank_ratio, cur_patch_size).evolution_step()
-                    new_choice_real = np.sum([[cur_rank_ratio, cur_patch_size], evolution_step], axis=0)
-                    new_choice.append([cfg_new.SEARCH_SPACE.RANK_RATIO.index(round(new_choice_real[0],2))+1, cfg_new.SEARCH_SPACE.PATCH_SIZE.index(int(new_choice_real[1]))+1]) 
+                    append_new_choices(new_choice, exist_choice_2, cur_rank_ratio, cur_patch_size, super_result_2)
 
                 else:
-                    in_point = []
-                    surranding_point = find_nearlist_point(exist_choice_2, [cur_rank_ratio, cur_patch_size], 5)
-                    for item in surranding_point:
-                        for item1 in super_result_2:
-                            if item1[:2] == item:
-                                in_point.append(item1)
-                    evolution_step = evolution_supernet(in_point, cur_rank_ratio, cur_patch_size).evolution_step()
-                    new_choice_real = np.sum([[cur_rank_ratio, cur_patch_size], evolution_step], axis=0)
-                    new_choice.append([cfg_new.SEARCH_SPACE.RANK_RATIO.index(round(new_choice_real[0],2))+1, cfg_new.SEARCH_SPACE.PATCH_SIZE.index(int(new_choice_real[1]))+1]) 
+                    append_new_choices(new_choice, exist_choice_2, cur_rank_ratio, cur_patch_size, super_result_2)
 
 
             elif int(val[2]) == 3*super_epoch:
@@ -902,26 +890,10 @@ def main(args):
                     level_ratio = sample_legel_ratio(model, args.input_size, new_patch_size, new_rank_ratio, args.sample_num, choices, output_path)
                     epoch_num = args.start_epoch+args.super_epoch
                     super_result_3.append([new_rank_ratio, new_patch_size, (max_acc+average_acc)/2, level_ratio])
-                    in_point = []
-                    surranding_point = find_nearlist_point(exist_choice_3, [cur_rank_ratio, cur_patch_size], 5)
-                    for item in surranding_point:
-                        for item1 in super_result_3:
-                            if item1[:2] == item:
-                                in_point.append(item1)
-                    evolution_step = evolution_supernet(in_point, cur_rank_ratio, cur_patch_size).evolution_step()
-                    new_choice_real = np.sum([[cur_rank_ratio, cur_patch_size], evolution_step], axis=0)
-                    new_choice.append([cfg_new.SEARCH_SPACE.RANK_RATIO.index(round(new_choice_real[0],2))+1, cfg_new.SEARCH_SPACE.PATCH_SIZE.index(int(new_choice_real[1]))+1]) 
+                    append_new_choices(new_choice, exist_choice_3, cur_rank_ratio, cur_patch_size, super_result_3)
                     
                 else:
-                    in_point = []
-                    surranding_point = find_nearlist_point(exist_choice_3, [cur_rank_ratio, cur_patch_size], 5)
-                    for item in surranding_point:
-                        for item1 in super_result_3:
-                            if item1[:2] == item:
-                                in_point.append(item1)
-                    evolution_step = evolution_supernet(in_point, cur_rank_ratio, cur_patch_size).evolution_step()
-                    new_choice_real = np.sum([[cur_rank_ratio, cur_patch_size], evolution_step], axis=0)
-                    new_choice.append([cfg_new.SEARCH_SPACE.RANK_RATIO.index(round(new_choice_real[0],2))+1, cfg_new.SEARCH_SPACE.PATCH_SIZE.index(int(new_choice_real[1]))+1]) 
+                    append_new_choices(new_choice, exist_choice_3, cur_rank_ratio, cur_patch_size, super_result_3)
                     
             else:
                 continue
@@ -931,6 +903,7 @@ def main(args):
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
     print('Training time {}'.format(total_time_str))
+
 
 
 if __name__ == '__main__':
