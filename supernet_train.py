@@ -327,7 +327,7 @@ def main(args):
         token_num_choice.append(i+1)
 
     all_choice = make_list(rank_ratio_choice, token_num_choice)
-    sellected_choice = random.sample(all_choice, 5)
+    selected_choice = random.sample(all_choice, 5)
     exist_choice_1 = []
     exist_choice_2 = []
     exist_choice_3 = []
@@ -339,7 +339,7 @@ def main(args):
     
     for i in range(int(args.step_num)):
         cur_choice = []
-        for i, val in enumerate(sellected_choice):
+        for i, val in enumerate(selected_choice):
             cur_rank_ratio = cfg_new.SEARCH_SPACE.RANK_RATIO[int(val[0])-1]
             cur_patch_size = cfg_new.SEARCH_SPACE.PATCH_SIZE[int(val[1])-1]
             model, output_path, output_dir = create_new_model(cur_rank_ratio,cur_patch_size)
@@ -829,7 +829,7 @@ def main(args):
             else:
                 continue
         
-        sellected_choice = new_choice
+        selected_choice = new_choice
 
     total_time = time.time() - start_time
     total_time_str = str(datetime.timedelta(seconds=int(total_time)))
