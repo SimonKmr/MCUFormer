@@ -208,6 +208,32 @@ def append_new_choices(new_choice,exist_choice,cur_rank_ratio,cur_patch_size,sup
     new_choice.append([cfg_new.SEARCH_SPACE.RANK_RATIO.index(round(new_choice_real[0], 2)) + 1,
                        cfg_new.SEARCH_SPACE.PATCH_SIZE.index(int(new_choice_real[1])) + 1])
 
+def create_new_model(rank_ratio,patch_size):
+    print(f"Creating SuperVisionTransformer that rank ratio is "
+          + str(rank_ratio) + " and patch size is "
+          + str(patch_size))
+    model = Vision_TransformerSuper(img_size=args.input_size,
+                                    patch_size=patch_size,
+                                    embed_dim=cfg.SUPERNET.EMBED_DIM, depth=cfg.SUPERNET.DEPTH,
+                                    num_heads=cfg.SUPERNET.NUM_HEADS, mlp_ratio=cfg.SUPERNET.MLP_RATIO,
+                                    qkv_bias=True, drop_rate=args.drop,
+                                    drop_path_rate=args.drop_path,
+                                    gp=args.gp,
+                                    num_classes=args.nb_classes,
+                                    max_relative_position=args.max_relative_position,
+                                    relative_position=args.relative_position,
+                                    change_qkv=args.change_qkv, abs_pos=not args.no_abs_pos,
+                                    rank_ratio=rank_ratio)
+    output_dir = Path(args.output_dir)
+    output_path = Path(str(output_dir) + '/supernet_' + str(rank_ratio) + '_' + str(patch_size))
+    model_path = Path(
+        str(output_dir) + '/supernet_' + str(rank_ratio) + '_' + str(patch_size) + '/model_modified.pth')
+    # print(output_path)
+    if not output_path.exists():
+        output_path.mkdir(parents=True)
+        torch.save(model, model_path)
+    return model, output_path, output_dir
+
 def main(args):
 
     utils.init_distributed_mode(args)
@@ -305,29 +331,7 @@ def main(args):
         for i, val in enumerate(sellected_choice):
             cur_rank_ratio = cfg_new.SEARCH_SPACE.RANK_RATIO[int(val[0])-1]
             cur_patch_size = cfg_new.SEARCH_SPACE.PATCH_SIZE[int(val[1])-1]
-            print(f"Creating SuperVisionTransformer that rank ratio is " 
-                + str(cur_rank_ratio) + " and patch size is "
-                + str(cur_patch_size))
-            model = Vision_TransformerSuper(img_size=args.input_size,
-                                            patch_size=cur_patch_size,
-                                            embed_dim=cfg.SUPERNET.EMBED_DIM, depth=cfg.SUPERNET.DEPTH,
-                                            num_heads=cfg.SUPERNET.NUM_HEADS,mlp_ratio=cfg.SUPERNET.MLP_RATIO,
-                                            qkv_bias=True, drop_rate=args.drop,
-                                            drop_path_rate=args.drop_path,
-                                            gp=args.gp,
-                                            num_classes=args.nb_classes,
-                                            max_relative_position=args.max_relative_position,
-                                            relative_position=args.relative_position,
-                                            change_qkv=args.change_qkv, abs_pos=not args.no_abs_pos, 
-                                            rank_ratio=cur_rank_ratio)
-            output_dir = Path(args.output_dir)
-            output_path = Path(str(output_dir) + '/supernet_' + str(cur_rank_ratio) + '_' + str(cur_patch_size))
-            model_path = Path(str(output_dir) + '/supernet_' + str(cur_rank_ratio) + '_' + str(cur_patch_size) + '/model_modified.pth')
-            print(output_path.absolute())
-
-            if not output_path.exists():
-                output_path.mkdir(parents=True)
-                torch.save(model, model_path)
+            model, output_path, output_dir = create_new_model(cur_rank_ratio,cur_patch_size)
             
             choices = {'num_heads': cfg.SEARCH_SPACE.NUM_HEADS, 'mlp_ratio': cfg.SEARCH_SPACE.MLP_RATIO,
                     'embed_dim': cfg.SEARCH_SPACE.EMBED_DIM , 'depth': cfg.SEARCH_SPACE.DEPTH}
@@ -525,28 +529,7 @@ def main(args):
                 if len(exist_choice_2) == 1:
                     new_rank_ratio = cfg_new.SEARCH_SPACE.RANK_RATIO[int(val[0])]
                     new_patch_size = cfg_new.SEARCH_SPACE.PATCH_SIZE[int(val[1])]
-                    print(f"Creating SuperVisionTransformer that rank ratio is" 
-                        + str(new_rank_ratio) + "and patch size is"
-                        + str(new_patch_size))
-                    model = Vision_TransformerSuper(img_size=args.input_size,
-                                                    patch_size=new_patch_size,
-                                                    embed_dim=cfg.SUPERNET.EMBED_DIM, depth=cfg.SUPERNET.DEPTH,
-                                                    num_heads=cfg.SUPERNET.NUM_HEADS,mlp_ratio=cfg.SUPERNET.MLP_RATIO,
-                                                    qkv_bias=True, drop_rate=args.drop,
-                                                    drop_path_rate=args.drop_path,
-                                                    gp=args.gp,
-                                                    num_classes=args.nb_classes,
-                                                    max_relative_position=args.max_relative_position,
-                                                    relative_position=args.relative_position,
-                                                    change_qkv=args.change_qkv, abs_pos=not args.no_abs_pos, 
-                                                    rank_ratio=new_rank_ratio)
-                    output_dir = Path(args.output_dir)
-                    output_path = Path(str(output_dir) + '/supernet_' + str(new_rank_ratio) + '_' + str(new_patch_size))
-                    model_path = Path(str(output_dir) + '/supernet_' + str(new_rank_ratio) + '_' + str(new_patch_size) + '/model_modified.pth')
-                    # print(output_path)
-                    if not output_path.exists():
-                        output_path.mkdir(parents=True)
-                        torch.save(model, model_path)
+                    model, output_path, output_dir = create_new_model(new_rank_ratio,new_patch_size)
 
                     choices = {'num_heads': cfg.SEARCH_SPACE.NUM_HEADS, 'mlp_ratio': cfg.SEARCH_SPACE.MLP_RATIO,
                             'embed_dim': cfg.SEARCH_SPACE.EMBED_DIM , 'depth': cfg.SEARCH_SPACE.DEPTH}
@@ -707,28 +690,7 @@ def main(args):
                 if len(exist_choice_3) == 1:
                     new_rank_ratio = cfg_new.SEARCH_SPACE.RANK_RATIO[int(val[0])]
                     new_patch_size = cfg_new.SEARCH_SPACE.PATCH_SIZE[int(val[1])]
-                    print(f"Creating SuperVisionTransformer that rank ratio is" 
-                        + str(new_rank_ratio) + "and patch size is"
-                        + str(new_patch_size))
-                    model = Vision_TransformerSuper(img_size=args.input_size,
-                                                    patch_size=new_patch_size,
-                                                    embed_dim=cfg.SUPERNET.EMBED_DIM, depth=cfg.SUPERNET.DEPTH,
-                                                    num_heads=cfg.SUPERNET.NUM_HEADS,mlp_ratio=cfg.SUPERNET.MLP_RATIO,
-                                                    qkv_bias=True, drop_rate=args.drop,
-                                                    drop_path_rate=args.drop_path,
-                                                    gp=args.gp,
-                                                    num_classes=args.nb_classes,
-                                                    max_relative_position=args.max_relative_position,
-                                                    relative_position=args.relative_position,
-                                                    change_qkv=args.change_qkv, abs_pos=not args.no_abs_pos, 
-                                                    rank_ratio=new_rank_ratio)
-                    output_dir = Path(args.output_dir)
-                    output_path = Path(str(output_dir) + '/supernet_' + str(new_rank_ratio) + '_' + str(new_patch_size))
-                    model_path = Path(str(output_dir) + '/supernet_' + str(new_rank_ratio) + '_' + str(new_patch_size) + '/model_modified.pth')
-                    # print(output_path)
-                    if not output_path.exists():
-                        output_path.mkdir(parents=True)
-                        torch.save(model, model_path)
+                    model, output_path, output_dir = create_new_model(new_rank_ratio,new_patch_size)
 
                     choices = {'num_heads': cfg.SEARCH_SPACE.NUM_HEADS, 'mlp_ratio': cfg.SEARCH_SPACE.MLP_RATIO,
                             'embed_dim': cfg.SEARCH_SPACE.EMBED_DIM , 'depth': cfg.SEARCH_SPACE.DEPTH}
