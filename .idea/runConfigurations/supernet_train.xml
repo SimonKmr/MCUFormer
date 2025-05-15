@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="supernet_train" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+    <module name="MCUFormer" />
+    <option name="ENV_FILES" value="" />
+    <option name="INTERPRETER_OPTIONS" value="-W ignore" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs>
+      <env name="PYTHONUNBUFFERED" value="1" />
+    </envs>
+    <option name="SDK_HOME" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="IS_MODULE_SDK" value="true" />
+    <option name="ADD_CONTENT_ROOTS" value="true" />
+    <option name="ADD_SOURCE_ROOTS" value="true" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/supernet_train.py" />
+    <option name="PARAMETERS" value="--data-path D:\Datasets\playing_cards --gp --change_qk --relative_position --mode super --dist-eval --num_workers 0 --load-pretrained-model --cfg ./experiments/supernet/supernet-T.yaml --cfg-new ./experiments/supernet/supernet-T-new.yaml --epochs 50 --warmup-epochs 5 --lr 1e-4 --super_epoch 1 --step-num 7 --model deit_tiny_patch16_224 --batch-size 128 --output .\network" />
+    <option name="SHOW_COMMAND_LINE" value="false" />
+    <option name="EMULATE_TERMINAL" value="false" />
+    <option name="MODULE_MODE" value="false" />
+    <option name="REDIRECT_INPUT" value="false" />
+    <option name="INPUT_FILE" value="" />
+    <method v="2" />
+  </configuration>
+</component>
