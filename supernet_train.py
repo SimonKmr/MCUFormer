@@ -234,6 +234,17 @@ def create_new_model(rank_ratio,patch_size):
         torch.save(model, model_path)
     return model, output_path, output_dir
 
+def load_model(output_dir, rank_ratio, patch_size, optimizer, lr_scheduler, loss_scaler, model_ema):
+    checkpoint_way = Path(str(output_dir) + '/supernet_' + str(rank_ratio) + '_' + str(patch_size) + '/checkpoint.pth')
+    checkpoint = torch.load(checkpoint_way, map_location='cpu')
+    optimizer.load_state_dict(checkpoint['optimizer'])
+    lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
+    args.start_epoch = checkpoint['epoch'] + 1
+    if 'scaler' in checkpoint:
+        loss_scaler.load_state_dict(checkpoint['scaler'])
+    if args.model_ema:
+        utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+
 def main(args):
 
     utils.init_distributed_mode(args)
@@ -381,38 +392,17 @@ def main(args):
             check_load=0
             for item in exist_choice_1:
                 if item == [cur_rank_ratio, cur_patch_size]:
-                    checkpoint_way = Path(str(output_dir) + '/supernet_' + str(cur_rank_ratio) + '_' + str(cur_patch_size) + '/checkpoint.pth')
-                    checkpoint = torch.load(checkpoint_way, map_location='cpu')
-                    optimizer.load_state_dict(checkpoint['optimizer'])
-                    lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
-                    args.start_epoch = checkpoint['epoch'] + 1
-                    if 'scaler' in checkpoint:
-                        loss_scaler.load_state_dict(checkpoint['scaler'])
-                    if args.model_ema:
-                        utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+                    load_model(output_dir, cur_rank_ratio, cur_patch_size,
+                               optimizer, lr_scheduler, loss_scaler, model_ema)
                     check_load = 1
             for item in  exist_choice_2:
                 if item == [cur_rank_ratio, cur_patch_size]:
-                    checkpoint_way = Path(str(output_dir) + '/supernet_' + str(cur_rank_ratio) + '_' + str(cur_patch_size) + '/checkpoint.pth')
-                    checkpoint = torch.load(checkpoint_way, map_location='cpu')
-                    optimizer.load_state_dict(checkpoint['optimizer'])
-                    lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
-                    args.start_epoch = checkpoint['epoch'] + 1
-                    if 'scaler' in checkpoint:
-                        loss_scaler.load_state_dict(checkpoint['scaler'])
-                    if args.model_ema:
-                        utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+                    load_model(output_dir, cur_rank_ratio, cur_patch_size,
+                               optimizer, lr_scheduler, loss_scaler, model_ema)
             for item in  exist_choice_3:
                 if item == [cur_rank_ratio, cur_patch_size]:
-                    checkpoint_way = Path(str(output_dir) + '/supernet_' + str(cur_rank_ratio) + '_' + str(cur_patch_size) + '/checkpoint.pth')
-                    checkpoint = torch.load(checkpoint_way, map_location='cpu')
-                    optimizer.load_state_dict(checkpoint['optimizer'])
-                    lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
-                    args.start_epoch = checkpoint['epoch'] + 1
-                    if 'scaler' in checkpoint:
-                        loss_scaler.load_state_dict(checkpoint['scaler'])
-                    if args.model_ema:
-                        utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+                    load_model(output_dir, cur_rank_ratio, cur_patch_size,
+                               optimizer, lr_scheduler, loss_scaler, model_ema)
             if args.resume and check_load != 1:
                 if args.resume.startswith('https'):
                         checkpoint = torch.hub.load_state_dict_from_url(
@@ -579,15 +569,8 @@ def main(args):
                     check_load = 0
                     for item in exist_choice_1:
                         if item == [new_rank_ratio, new_patch_size]:
-                            checkpoint_way = Path(str(output_dir) + '/supernet_' + str(new_rank_ratio) + '_' + str(new_patch_size) + '/checkpoint.pth')
-                            checkpoint = torch.load(checkpoint_way, map_location='cpu')
-                            optimizer.load_state_dict(checkpoint['optimizer'])
-                            lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
-                            args.start_epoch = checkpoint['epoch'] + 1
-                            if 'scaler' in checkpoint:
-                                loss_scaler.load_state_dict(checkpoint['scaler'])
-                            if args.model_ema:
-                                utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+                            load_model(output_dir,new_rank_ratio,new_patch_size,
+                                       optimizer, lr_scheduler, loss_scaler, model_ema)
                             check_load = 1
                     if args.resume and check_load != 1:
                         if args.resume.startswith('https'):
@@ -740,27 +723,13 @@ def main(args):
                     check_load = 0
                     for item in exist_choice_1:
                         if item == [new_rank_ratio, new_patch_size]:
-                            checkpoint_way = Path(str(output_dir) + '/supernet_' + str(new_rank_ratio) + '_' + str(new_patch_size) + '/checkpoint.pth')
-                            checkpoint = torch.load(checkpoint_way, map_location='cpu')
-                            optimizer.load_state_dict(checkpoint['optimizer'])
-                            lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
-                            args.start_epoch = checkpoint['epoch'] + 1
-                            if 'scaler' in checkpoint:
-                                loss_scaler.load_state_dict(checkpoint['scaler'])
-                            if args.model_ema:
-                                utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+                            load_model(output_dir, new_rank_ratio, new_patch_size,
+                                       optimizer, lr_scheduler, loss_scaler, model_ema)
                             check_load = 1
                     for item in  exist_choice_2:
                         if item == [cur_rank_ratio, cur_patch_size]:
-                            checkpoint_way = Path(str(output_dir) + '/supernet_' + str(cur_rank_ratio) + '_' + str(cur_patch_size) + '/checkpoint.pth')
-                            checkpoint = torch.load(checkpoint_way, map_location='cpu')
-                            optimizer.load_state_dict(checkpoint['optimizer'])
-                            lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
-                            args.start_epoch = checkpoint['epoch'] + 1
-                            if 'scaler' in checkpoint:
-                                loss_scaler.load_state_dict(checkpoint['scaler'])
-                            if args.model_ema:
-                                utils._load_checkpoint_for_ema(model_ema, checkpoint['model_ema'])
+                            load_model(output_dir,cur_rank_ratio,cur_patch_size,
+                                       optimizer, lr_scheduler, loss_scaler, model_ema)
                             if args.resume and check_load != 1:
                                 if args.resume.startswith('https'):
                                         checkpoint = torch.hub.load_state_dict_from_url(
