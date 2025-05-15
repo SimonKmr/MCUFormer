@@ -42,6 +42,7 @@ def find_min_positions(lst):
 
 def find_nearlist_point(supernet, current_point, distance):
     tree = KDTree(supernet)
+    distance = min(len(supernet),distance)
     _, indices = tree.query(current_point, distance)
     choose_point = []
     for item in indices:
