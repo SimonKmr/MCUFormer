@@ -47,7 +47,7 @@ python -m torch.distributed.launch --nproc_per_node=8 --use_env supernet_train.p
 
 or
 ```
-python -W ignore supernet_train.py --data-path datasets\playing_cards --gp --change_qk --relative_position --mode super --dist-eval --load-pretrained-model --cfg ./experiments/supernet/supernet-T.yaml --cfg-new ./experiments/supernet/supernet-T-new.yaml --epochs 500 --warmup-epochs 5 --lr 1e-4 --super_epoch 1 --step-num 7 --model deit_tiny_patch16_224 --batch-size 128 --output .\network
+python supernet_train.py --data-path ./../dataset/imagenet-1k/data/train --gp --change_qk --relative_position --mode super --dist-eval --load-pretrained-model --cfg ./experiments/supernet/supernet-T.yaml --cfg-new ./experiments/supernet/supernet-T-new.yaml --epochs 500 --warmup-epochs 5 --lr 1e-4 --super_epoch 1 --step-num 7 --model deit_tiny_patch16_224 --batch-size 128 --output ./network
 ```
 
 ### Search
